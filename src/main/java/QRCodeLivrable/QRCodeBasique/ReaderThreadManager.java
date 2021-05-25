@@ -27,7 +27,7 @@ class ReaderThreadManager extends Thread implements Runnable {
 	@Override
 	public void run() {
 		Splitter splitter = new Splitter();
-		splitter.setSplitAtPage(doc.getNumberOfPages()/100);
+		splitter.setSplitAtPage(doc.getNumberOfPages()/200);
 		try {
 			List<PDDocument> splittedDocument = splitter.split(doc);
 			List<Path> pathsToMiniDocs = new ArrayList<Path>();
