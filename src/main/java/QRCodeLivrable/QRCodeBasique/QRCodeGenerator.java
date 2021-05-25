@@ -106,7 +106,7 @@ public class QRCodeGenerator {
 
     public static void main(String[] args) {
        try {
-		mergingAndInsert(250);
+		mergingAndInsert(257);
 		System.out.println("noice");
 	} catch (IOException | WriterException e) {
 		System.out.println("rip");

@@ -32,7 +32,7 @@ class ReaderThreadManager extends Thread implements Runnable {
 		ManagementFactory.getOperatingSystemMXBean()).getTotalPhysicalMemorySize();		
 		
 		/* 
-		 * 350 - (50 * (ln(RAM / 1000) / ln(2)))
+		 * 350 - (50 * (ln(RAM / 1000^3) / ln(2)))
 		 * formule dynamique pour optimiser la division
 		 * du pdf
 		 */
