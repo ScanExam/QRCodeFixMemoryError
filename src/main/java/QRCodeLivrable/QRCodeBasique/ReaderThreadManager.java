@@ -36,12 +36,7 @@ class ReaderThreadManager extends Thread implements Runnable {
 		 * formule dynamique pour optimiser la division
 		 * du pdf
 		 */
-		int div = (int) (350 - (50 * 
-				(Math.log(
-						Math.round(memorySize / (1024 * 1024)) / 1000)
-				)
-				/ Math.log(2)
-				));
+		int div = (int) (350 - (50 * (Math.log(Math.round(memorySize / Math.pow(1024, 3))) / Math.log(2))));
 		
 		System.out.println(div);
 		Splitter splitter = new Splitter();
