@@ -2,6 +2,7 @@ package QRCodeLivrable.QRCodeBasique;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.management.ManagementFactory;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -26,8 +27,25 @@ class ReaderThreadManager extends Thread implements Runnable {
 	
 	@Override
 	public void run() {
+		
+		long memorySize = ((com.sun.management.OperatingSystemMXBean)
+		ManagementFactory.getOperatingSystemMXBean()).getTotalPhysicalMemorySize();		
+		
+		/* 
+		 * 350 - (50 * (ln(RAM / 1000) / ln(2)))
+		 * formule dynamique pour optimiser la division
+		 * du pdf
+		 */
+		int div = (int) (350 - (50 * 
+				(Math.log(
+						Math.round(memorySize / (1024 * 1024)) / 1000)
+				)
+				/ Math.log(2)
+				));
+		
+		System.out.println(div);
 		Splitter splitter = new Splitter();
-		splitter.setSplitAtPage(doc.getNumberOfPages()/200);
+		splitter.setSplitAtPage(doc.getNumberOfPages()/div);
 		try {
 			List<PDDocument> splittedDocument = splitter.split(doc);
 			List<Path> pathsToMiniDocs = new ArrayList<Path>();
