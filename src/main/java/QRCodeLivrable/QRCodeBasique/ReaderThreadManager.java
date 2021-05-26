@@ -34,7 +34,8 @@ class ReaderThreadManager extends Thread implements Runnable {
 		int div = 100; //valeur par défaut
 		int nbPages = doc.getNumberOfPages();
 		
-		if(Math.round(nbPages/memorySize) >= 125) {
+		System.out.println(nbPages/((memorySize)/Math.pow(1024, 3)));
+		if(nbPages/((memorySize)/Math.pow(1024, 3)) >= 125) {
 			/*
 			 * (nbPages/3) - (50 * (ln(RAM / 1000^3) / ln(2))) formule dynamique pour optimiser la
 			 * division du pdf
