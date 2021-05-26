@@ -30,17 +30,23 @@ class ReaderThreadManager extends Thread implements Runnable {
 
 		long memorySize = ((com.sun.management.OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean())
 				.getTotalPhysicalMemorySize();
-
-		/*
-		 * 350 - (50 * (ln(RAM / 1000^3) / ln(2))) formule dynamique pour optimiser la
-		 * division du pdf
-		 */
-		int div = (int) ((doc.getNumberOfPages() / 4)
-				- (50 * (Math.log(Math.round(memorySize / Math.pow(1024, 3))) / Math.log(2))));
+		
+		int div = 100; //valeur par défaut
+		int nbPages = doc.getNumberOfPages();
+		
+		if(Math.round(nbPages/memorySize) >= 125) {
+			/*
+			 * (nbPages/3) - (50 * (ln(RAM / 1000^3) / ln(2))) formule dynamique pour optimiser la
+			 * division du pdf
+			 */
+			div = (int) ((nbPages / 3)
+					- (50 * (Math.log(Math.round(memorySize / Math.pow(1024, 3))) / Math.log(2))));
+		}
 
 		System.out.println(div);
+		
 		Splitter splitter = new Splitter();
-		splitter.setSplitAtPage(doc.getNumberOfPages() / div);
+		splitter.setSplitAtPage(nbPages / div);
 		try {
 			List<PDDocument> splittedDocument = splitter.split(doc);
 			List<Path> pathsToMiniDocs = new ArrayList<Path>();
