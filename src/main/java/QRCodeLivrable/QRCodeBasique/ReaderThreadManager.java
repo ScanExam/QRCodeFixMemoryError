@@ -37,6 +37,7 @@ class ReaderThreadManager extends Thread implements Runnable {
 		System.out.println(nbPages/((memorySize)/Math.pow(1024, 3)));
 		if(nbPages/((memorySize)/Math.pow(1024, 3)) >= 125) {
 			/*
+			 * TODO faire que ce soit linéaire et non logarithmique
 			 * (nbPages/3) - (50 * (ln(RAM / 1000^3) / ln(2))) formule dynamique pour optimiser la
 			 * division du pdf
 			 */
@@ -46,8 +47,20 @@ class ReaderThreadManager extends Thread implements Runnable {
 
 		System.out.println(div);
 		
+		
+		
 		Splitter splitter = new Splitter();
-		splitter.setSplitAtPage(nbPages / div);
+		
+		int split = nbPages/4;
+		
+		if((nbPages / div) > 1)
+			split = nbPages / div;
+		
+		System.out.println(nbPages);
+		splitter.setSplitAtPage(split);
+		
+		
+		
 		try {
 			List<PDDocument> splittedDocument = splitter.split(doc);
 			List<Path> pathsToMiniDocs = new ArrayList<Path>();
