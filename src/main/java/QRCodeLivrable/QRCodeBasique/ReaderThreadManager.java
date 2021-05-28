@@ -30,26 +30,27 @@ class ReaderThreadManager extends Thread implements Runnable {
 
 		long memorySize = ((com.sun.management.OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean())
 				.getTotalPhysicalMemorySize();
+		System.out.println(memorySize);
 		
-		int div = 100; //valeur par défaut
+		
+		
+		int div = 100; //valeur par dï¿½faut
 		int nbPages = doc.getNumberOfPages();
 		
 		System.out.println(nbPages/((memorySize)/Math.pow(1024, 3)));
-		if(nbPages/((memorySize)/Math.pow(1024, 3)) >= 125) {
+		if(nbPages /(Runtime.getRuntime().maxMemory() / (1024 * 1024 * 1024)) >= 300) {
 			/*
-			 * TODO faire que ce soit linéaire et non logarithmique
+			 * TODO faire que ce soit linï¿½aire et non logarithmique
 			 * (nbPages/3) - (50 * (ln(RAM / 1000^3) / ln(2))) formule dynamique pour optimiser la
 			 * division du pdf
 			 */
-			div = (int) ((nbPages / 3)
-					- (50 * (Math.log(Math.round(memorySize / Math.pow(1024, 3))) / Math.log(2))));
+			div = (int) ((doc.getNumberOfPages() - (doc.getNumberOfPages() / (Runtime.getRuntime().maxMemory() / (1024 * 1024 * 1024))))/3);
 		}
 
 		System.out.println(div);
 		
 		
-		
-		Splitter splitter = new Splitter();
+Splitter splitter = new Splitter();
 		
 		int split = nbPages/4;
 		
@@ -150,37 +151,10 @@ class ReaderThreadManager extends Thread implements Runnable {
 				System.out.println("Near to close");
 			}
 
-			/*
-			 * for(int j = 0; j < pathsToMiniDocs.size(); j++) {
-			 * 
-			 * PDDocument miniDoc = PDDocument.load(pathsToMiniDocs.get(j).toFile());
-			 * 
-			 * ExecutorService service = Executors.newFixedThreadPool(4); CountDownLatch
-			 * latchThreads = new CountDownLatch(4); PDFRenderer pdf = new
-			 * PDFRenderer(miniDoc);
-			 * 
-			 * service.execute(new ReaderThread(reader, 0, (miniDoc.getNumberOfPages() / 4),
-			 * pdf, latchThreads)); service.execute(new ReaderThread(reader,
-			 * (miniDoc.getNumberOfPages() / 4), (miniDoc.getNumberOfPages() / 2), pdf,
-			 * latchThreads)); service.execute(new ReaderThread(reader,
-			 * (miniDoc.getNumberOfPages() / 2), (3 * miniDoc.getNumberOfPages() / 4), pdf,
-			 * latchThreads)); service.execute(new ReaderThread(reader, (3 *
-			 * miniDoc.getNumberOfPages() / 4), miniDoc.getNumberOfPages(), pdf,
-			 * latchThreads));
-			 * 
-			 * try { latchThreads.await(); } catch (InterruptedException e) {
-			 * System.out.println("PEUT PAS FERMER LES THREADS"); } service.shutdown();
-			 * 
-			 * miniDoc.close();
-			 * 
-			 * System.gc();
-			 * 
-			 * System.out.println("\n\n\nThread " + j + " fermÃ©\n\n\n"); }
-			 */
-
 		} catch (IOException e) {
 			System.out.println("Erreur de split");
 		}
+		
 
 	}
 }

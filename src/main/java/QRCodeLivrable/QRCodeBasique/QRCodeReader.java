@@ -11,13 +11,14 @@ import org.apache.pdfbox.rendering.*;
 
 import java.awt.image.*;
 import java.io.*;
+//import java.lang.management.ManagementFactory;
 import java.util.HashMap;
 import java.util.Map;
 
 
 
 /*
-profiling java pour la mémoire
+profiling java pour la mï¿½moire
 gc doc
 
 mettre poc sur git
@@ -25,13 +26,12 @@ mettre poc sur git
 
 Essayer de donner qu'un seul miniDoc par thread
 sinon
-au lieu de créer des threads : créer des JVM
+au lieu de crï¿½er des threads : crï¿½er des JVM
  */
 
 
 public class QRCodeReader {
 
-	
 	public void readPDF() throws IOException {
 		PDDocument doc = PDDocument.load(new File("8pagesInserted.pdf"));
 		
@@ -92,13 +92,40 @@ public class QRCodeReader {
 			 * Je ne sais pas pourquoi, des fois des QRCodes ne sont pas trouvÃ©s
 			 * (alors qu'ils sont bien prÃ©sents !)
 			 * Par contre c'est idempotant
-			 * Possibilité que cela vienne des limites de la lib qui analyse les QRCodes
+			 * Possibilitï¿½ que cela vienne des limites de la lib qui analyse les QRCodes
 			 */
 		}
 	}
 	
 
 	public static void main(String[] args) throws Exception {
+		
+		/*System.out.println("Runtime memory total : " + Runtime.getRuntime().totalMemory());
+		
+		System.out.println("Runtime memory max : " + Runtime.getRuntime().maxMemory());
+		
+		System.out.println("Runtime memory max (Go): " + (Runtime.getRuntime().maxMemory() / (1024 * 1024 * 1024)));
+		
+		System.out.println("Runtime memory free : " + Runtime.getRuntime().freeMemory());
+		
+		long memorySize = ((com.sun.management.OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean())
+				.getTotalPhysicalMemorySize();
+		System.out.println("Computer memory size : " + memorySize);
+		
+		
+		PDDocument doc = PDDocument.load(new File("8pagesInserted.pdf"));
+		
+		System.out.println("Condition : " + (doc.getNumberOfPages() /(Runtime.getRuntime().maxMemory() / (1024 * 1024 * 1024))));
+		
+		int div = (int) ((doc.getNumberOfPages() / 3)
+				- (50 * (Math.log(Math.round(memorySize / Math.pow(1024, 3))) / Math.log(2))));
+		
+		System.out.println("Division with computer memory size : " + div);
+		
+		div = (int) ((doc.getNumberOfPages() - (doc.getNumberOfPages() / (Runtime.getRuntime().maxMemory() / (1024 * 1024 * 1024))))/3);
+		
+		System.out.println("Division with JVM memory size : " + div);*/
+		
 		QRCodeReader reader = new QRCodeReader();
 		reader.readPDF();
 	}
