@@ -37,14 +37,14 @@ class ReaderThreadManager extends Thread implements Runnable {
 			 * (nbPages/3) - (50 * (ln(RAM / 1000^3) / ln(2))) formule dynamique pour optimiser la
 			 * division du pdf
 			 */
-			div = (int) ((doc.getNumberOfPages() - (doc.getNumberOfPages() / (Runtime.getRuntime().maxMemory() / (1024 * 1024 * 1024))))/3);
-			
+			div = (int) ((doc.getNumberOfPages() - (doc.getNumberOfPages() / (Runtime.getRuntime().maxMemory() / (1024 * 1024 * 1024) )))/3);
+
 			if(div == 0)
-				div = nbPages / 2;
+				div = nbPages / 3;
 		}
 		
 		System.out.println(div);
-		
+
 		
 		Splitter splitter = new Splitter();
 		
@@ -52,7 +52,7 @@ class ReaderThreadManager extends Thread implements Runnable {
 		
 		if((nbPages / div) > 1)
 			split = nbPages / div;
-		
+		System.out.println(split);
 		splitter.setSplitAtPage(split);
 		
 		
