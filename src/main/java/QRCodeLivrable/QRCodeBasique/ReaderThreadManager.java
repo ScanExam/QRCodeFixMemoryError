@@ -2,7 +2,6 @@ package QRCodeLivrable.QRCodeBasique;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.management.ManagementFactory;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -26,38 +25,34 @@ class ReaderThreadManager extends Thread implements Runnable {
 	}
 
 	@Override
-	public void run() {
-
-		long memorySize = ((com.sun.management.OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean())
-				.getTotalPhysicalMemorySize();
-		System.out.println(memorySize);
-		
-		
+	public void run() {	
 		
 		int div = 100; //valeur par d�faut
 		int nbPages = doc.getNumberOfPages();
 		
-		System.out.println(nbPages/((memorySize)/Math.pow(1024, 3)));
-		if(nbPages /(Runtime.getRuntime().maxMemory() / (1024 * 1024 * 1024)) >= 300) {
+		System.out.println(nbPages/((Runtime.getRuntime().maxMemory())/Math.pow(1024, 3)));
+		if(nbPages /(Runtime.getRuntime().maxMemory() / (1024 * 1024 * 1024)) >= 200) {
 			/*
 			 * TODO faire que ce soit lin�aire et non logarithmique
 			 * (nbPages/3) - (50 * (ln(RAM / 1000^3) / ln(2))) formule dynamique pour optimiser la
 			 * division du pdf
 			 */
 			div = (int) ((doc.getNumberOfPages() - (doc.getNumberOfPages() / (Runtime.getRuntime().maxMemory() / (1024 * 1024 * 1024))))/3);
+			
+			if(div == 0)
+				div = nbPages / 1000;
 		}
 
 		System.out.println(div);
 		
 		
-Splitter splitter = new Splitter();
+		Splitter splitter = new Splitter();
 		
 		int split = nbPages/4;
 		
 		if((nbPages / div) > 1)
 			split = nbPages / div;
 		
-		System.out.println(nbPages);
 		splitter.setSplitAtPage(split);
 		
 		
