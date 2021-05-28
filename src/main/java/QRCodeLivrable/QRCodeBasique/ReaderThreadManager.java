@@ -40,9 +40,9 @@ class ReaderThreadManager extends Thread implements Runnable {
 			div = (int) ((doc.getNumberOfPages() - (doc.getNumberOfPages() / (Runtime.getRuntime().maxMemory() / (1024 * 1024 * 1024))))/3);
 			
 			if(div == 0)
-				div = nbPages / 10;
+				div = nbPages / 2;
 		}
-
+		
 		System.out.println(div);
 		
 		
