@@ -33,9 +33,10 @@ class ReaderThreadManager extends Thread implements Runnable {
 		System.out.println(nbPages/((Runtime.getRuntime().maxMemory())/Math.pow(1024, 3)));
 		if(nbPages /(Runtime.getRuntime().maxMemory() / (1024 * 1024 * 1024)) >= 200) {
 			/*
-			 * TODO faire que ce soit lin�aire et non logarithmique
-			 * (nbPages/3) - (50 * (ln(RAM / 1000^3) / ln(2))) formule dynamique pour optimiser la
-			 * division du pdf
+			 * TODO
+			 * Problème de dépassement de mémoire de la JVM lors de la lecture des QRCodes : 
+			 * revoir la formule, faire un graphe, montrer les données, benchmark de où ça casse, 
+			 * pourquoi et comment
 			 */
 			div = (int) ((doc.getNumberOfPages() - (doc.getNumberOfPages() / (Runtime.getRuntime().maxMemory() / (1024 * 1024 * 1024) )))/3);
 
