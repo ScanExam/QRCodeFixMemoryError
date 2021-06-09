@@ -21,6 +21,8 @@ import com.google.zxing.ResultPoint;
 import com.google.zxing.client.j2se.BufferedImageLuminanceSource;
 import com.google.zxing.common.HybridBinarizer;
 
+import javafx.util.Pair;
+
 public class QRCodeReader {
 
 	public void readPDF() throws IOException {
@@ -78,6 +80,8 @@ public class QRCodeReader {
 			MultiFormatReader mfr = new MultiFormatReader();
 			mfr.setHints(map);
 			Result result = mfr.decodeWithState(bitmap);
+			System.out.println(result.getText() + " position = " + qrCodePosition(result));
+			System.out.println(result.getText() + " size = " + qrCodeSize(result));
 			System.out.println(result.getText() + " orientation = " + qrCodeOrientation(result));
 			return result.getText();
 		} catch (NotFoundException e) {
@@ -91,25 +95,85 @@ public class QRCodeReader {
 	}
 
 	/**
-	 * Retourne l'orientation d'un QR Code sous la forme d'un angle compris entre ]-180;180]°
-	 * @param result Résultat du dédodage du QR Code
-	 * @return Orientation du QR Code
+	 * Retourne la position d'un QR code en pixel. On considère que le point
+	 * d'origine du QR code est en haut à gauche et que les coordonnées (0, 0) sont
+	 * sont haut à gauche dela page. Ne marche que si le code à un angle de 0 ou
+	 * 180°.
+	 * 
+	 * @param result Résultat du dédodage du QR code
+	 * @return Paire contenant les positions x et y du QR code
 	 */
-	private double qrCodeOrientation(Result result) {
+	private Pair<Float, Float> qrCodePosition(Result result) {
 		ResultPoint[] resultPoints = result.getResultPoints();
 		ResultPoint a = resultPoints[1];
 		ResultPoint b = resultPoints[2];
 		ResultPoint c = resultPoints[0];
-		
+		float x = (b.getX() + a.getX()) / 2;
+		float y = (c.getY() + a.getY()) / 2;
+
+		// Point d'origine en haut à gauche
+		double widthX2 = Math.pow(b.getX() - a.getX(), 2);
+		double widthY2 = Math.pow(b.getY() - a.getY(), 2);
+		double width = Math.sqrt(widthX2 + widthY2);
+		double heightX2 = Math.pow(c.getX() - a.getX(), 2);
+		double heightY2 = Math.pow(c.getY() - a.getY(), 2);
+		double height = Math.sqrt(heightX2 + heightY2);
+		width /= (4.0f / 3.0f);
+		height /= (4.0f / 3.0f);
+		x -= width;
+		y -= height;
+
+		return new Pair<Float, Float>(x, y);
+	}
+
+	/**
+	 * Retourne la taille (longueur ou largueur, le QR code est carré) d'un QR code
+	 * en pixel.
+	 * 
+	 * @param result Résultat du dédodage du QR code
+	 * @return Taille du QR code
+	 */
+	private float qrCodeSize(Result result) {
+		ResultPoint[] resultPoints = result.getResultPoints();
+		ResultPoint a = resultPoints[1];
+		ResultPoint b = resultPoints[2];
+		ResultPoint c = resultPoints[0];
+
+		double widthX2 = Math.pow(b.getX() - a.getX(), 2);
+		double widthY2 = Math.pow(b.getY() - a.getY(), 2);
+		float width = (float) Math.sqrt(widthX2 + widthY2);
+
+		double heightX2 = Math.pow(c.getX() - a.getX(), 2);
+		double heightY2 = Math.pow(c.getY() - a.getY(), 2);
+		float height = (float) Math.sqrt(heightX2 + heightY2);
+		width *= 1.5f;
+		height *= 1.5f;
+
+		return ((width + height) / 2.0f);
+	}
+
+	/**
+	 * Retourne l'orientation d'un QR code sous la forme d'un angle compris entre
+	 * ]-180;180]°. Plus le QR code est orienté vers la droite plus il gagne de
+	 * dégrés.
+	 * 
+	 * @param result Résultat du dédodage du QR code
+	 * @return Orientation du QR code
+	 */
+	private float qrCodeOrientation(Result result) {
+		ResultPoint[] resultPoints = result.getResultPoints();
+		ResultPoint a = resultPoints[1];
+		ResultPoint b = resultPoints[2];
+
 		float distanceX = b.getX() - a.getX();
 		float distanceY = b.getY() - a.getY();
-		double angle = Math.atan(distanceY / distanceX) * (180 / Math.PI);
-		if (angle > 0 && a.getX() > b.getX() && a.getX() > c.getX()) {
+		float angle = (float) (Math.atan(distanceY / distanceX) * (180 / Math.PI));
+		if (angle > 0 && a.getX() > b.getX() && a.getY() >= b.getY()) {
 			angle -= 180;
 		} else if (angle <= 0 && b.getX() < a.getX() && b.getY() >= a.getY()) {
 			angle += 180;
 		}
-		
+
 		return angle;
 	}
 
